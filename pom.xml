@@ -106,7 +106,7 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.0</minimum> <!-- passe le seuil à 0% -->
+                                            <minimum>0.0</minimum> <!-- seuil à 0% -->
                                         </limit>
                                     </limits>
                                 </rule>
@@ -122,7 +122,6 @@
                 <version>3.2.5</version>
             </plugin>
         </plugins>
-
     </build>
 
 </project>
