@@ -4,17 +4,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DepartmentTest {
+class DepartmentTest {
 
     private Department department;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         department = new Department();
     }
 
     @Test
-    public void testDepartmentCreation() {
+    void testDepartmentCreation() {
         // Arrange & Act
         department.setIdDepartment(1L);
         department.setName("Informatique");
@@ -26,7 +26,7 @@ public class DepartmentTest {
     }
 
     @Test
-    public void testDepartmentNameNotNull() {
+    void testDepartmentNameNotNull() {
         // Arrange
         department.setName("Génie Logiciel");
 
@@ -35,7 +35,7 @@ public class DepartmentTest {
     }
 
     @Test
-    public void testDepartmentSettersAndGetters() {
+    void testDepartmentSettersAndGetters() {
         // Act
         department.setName("Réseaux et Télécommunications");
 

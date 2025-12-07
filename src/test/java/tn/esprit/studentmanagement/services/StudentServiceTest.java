@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class StudentServiceTest {
+class StudentServiceTest {
 
     @Mock
     private StudentRepository studentRepository;
@@ -29,7 +29,7 @@ public class StudentServiceTest {
     private Student student2;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         student1 = new Student();
         student1.setIdStudent(1L);
         student1.setFirstName("Nesrine");
@@ -42,7 +42,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testGetAllStudents() {
+    void testGetAllStudents() {
         // Arrange
         List<Student> studentList = Arrays.asList(student1, student2);
         when(studentRepository.findAll()).thenReturn(studentList);
@@ -59,7 +59,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testGetAllStudentsEmpty() {
+    void testGetAllStudentsEmpty() {
         // Arrange
         when(studentRepository.findAll()).thenReturn(Arrays.asList());
 
@@ -74,7 +74,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testGetStudentById() {
+    void testGetStudentById() {
         // Arrange
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student1));
 
@@ -90,7 +90,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testGetStudentByIdNotFound() {
+    void testGetStudentByIdNotFound() {
         // Arrange
         when(studentRepository.findById(999L)).thenReturn(Optional.empty());
 
@@ -103,7 +103,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testSaveStudent() {
+    void testSaveStudent() {
         // Arrange
         when(studentRepository.save(student1)).thenReturn(student1);
 
@@ -118,7 +118,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testSaveNewStudent() {
+    void testSaveNewStudent() {
         // Arrange
         Student newStudent = new Student();
         newStudent.setFirstName("Mohamed");
@@ -143,7 +143,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testDeleteStudent() {
+    void testDeleteStudent() {
         // Arrange
         Long studentId = 1L;
         doNothing().when(studentRepository).deleteById(studentId);
@@ -156,7 +156,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testDeleteStudentMultipleTimes() {
+    void testDeleteStudentMultipleTimes() {
         // Arrange
         Long studentId1 = 1L;
         Long studentId2 = 2L;
@@ -173,7 +173,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void testStudentRepositoryInteraction() {
+    void testStudentRepositoryInteraction() {
         // Arrange
         when(studentRepository.findAll()).thenReturn(Arrays.asList(student1));
 

@@ -4,13 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.studentmanagement.entities.Department;
 import tn.esprit.studentmanagement.repositories.DepartmentRepository;
-
 import java.util.List;
 
 @Service
 
 public class DepartmentService implements IDepartmentService {
-    @Autowired
+
     DepartmentRepository departmentRepository;
 
     @Override
@@ -20,9 +19,9 @@ public class DepartmentService implements IDepartmentService {
 
     @Override
     public Department getDepartmentById(Long idDepartment) {
-        return departmentRepository.findById(idDepartment).get();
+        // .orElse(null) returns the value if present, or null otherwise.
+        return departmentRepository.findById(idDepartment).orElse(null);
     }
-
     @Override
     public Department saveDepartment(Department department) {
         return departmentRepository.save(department);

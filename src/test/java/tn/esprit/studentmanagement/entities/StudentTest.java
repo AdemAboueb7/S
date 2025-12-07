@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StudentTest {
+class StudentTest {
 
     private Student student;
 
@@ -14,7 +14,7 @@ public class StudentTest {
     }
 
     @Test
-    public void testStudentCreation() {
+    void testStudentCreation() {
         // Arrange & Act
         student.setIdStudent(1L);
         student.setFirstName("Nesrine");
@@ -28,7 +28,7 @@ public class StudentTest {
     }
 
     @Test
-    public void testStudentSettersAndGetters() {
+    void testStudentSettersAndGetters() {
         // Act
         student.setFirstName("Ahmed");
         student.setLastName("Ben Ali");
@@ -39,13 +39,13 @@ public class StudentTest {
     }
 
     @Test
-    public void testStudentNotNull() {
+    void testStudentNotNull() {
         // Assert
         assertNotNull(student);
     }
 
     @Test
-    public void testStudentIdAssignment() {
+    void testStudentIdAssignment() {
         // Arrange
         Long expectedId = 100L;
 
