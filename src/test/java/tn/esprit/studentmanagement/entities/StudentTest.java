@@ -9,7 +9,7 @@ class StudentTest {
     private Student student;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         student = new Student();
     }
 
