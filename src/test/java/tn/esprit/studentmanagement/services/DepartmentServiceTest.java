@@ -32,13 +32,17 @@ class DepartmentServiceTest {
     void setUp() {
         department1 = new Department();
         department1.setIdDepartment(1L);
-        department1.setNameDepartment("Computer Science");
-        department1.setResponsible("Dr. Smith");
+        department1.setName("Computer Science");
+        department1.setHead("Dr. Smith");
+        department1.setLocation("Building A");
+        department1.setPhone("123-456-7890");
 
         department2 = new Department();
         department2.setIdDepartment(2L);
-        department2.setNameDepartment("Engineering");
-        department2.setResponsible("Dr. Johnson");
+        department2.setName("Engineering");
+        department2.setHead("Dr. Johnson");
+        department2.setLocation("Building B");
+        department2.setPhone("098-765-4321");
     }
 
     @Test
@@ -53,8 +57,8 @@ class DepartmentServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertEquals("Computer Science", result.get(0).getNameDepartment());
-        assertEquals("Engineering", result.get(1).getNameDepartment());
+        assertEquals("Computer Science", result.get(0).getName());
+        assertEquals("Engineering", result.get(1).getName());
         verify(departmentRepository, times(1)).findAll();
     }
 
@@ -84,8 +88,8 @@ class DepartmentServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(1L, result.getIdDepartment());
-        assertEquals("Computer Science", result.getNameDepartment());
-        assertEquals("Dr. Smith", result.getResponsible());
+        assertEquals("Computer Science", result.getName());
+        assertEquals("Dr. Smith", result.getHead());
         verify(departmentRepository, times(1)).findById(1L);
     }
 
@@ -112,8 +116,8 @@ class DepartmentServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals("Computer Science", result.getNameDepartment());
-        assertEquals("Dr. Smith", result.getResponsible());
+        assertEquals("Computer Science", result.getName());
+        assertEquals("Dr. Smith", result.getHead());
         verify(departmentRepository, times(1)).save(department1);
     }
 
@@ -121,13 +125,13 @@ class DepartmentServiceTest {
     void testSaveNewDepartment() {
         // Arrange
         Department newDepartment = new Department();
-        newDepartment.setNameDepartment("Mathematics");
-        newDepartment.setResponsible("Dr. Brown");
+        newDepartment.setName("Mathematics");
+        newDepartment.setHead("Dr. Brown");
 
         Department savedDepartment = new Department();
         savedDepartment.setIdDepartment(3L);
-        savedDepartment.setNameDepartment("Mathematics");
-        savedDepartment.setResponsible("Dr. Brown");
+        savedDepartment.setName("Mathematics");
+        savedDepartment.setHead("Dr. Brown");
 
         when(departmentRepository.save(newDepartment)).thenReturn(savedDepartment);
 
@@ -137,7 +141,7 @@ class DepartmentServiceTest {
         // Assert
         assertNotNull(result);
         assertNotNull(result.getIdDepartment());
-        assertEquals("Mathematics", result.getNameDepartment());
+        assertEquals("Mathematics", result.getName());
         verify(departmentRepository, times(1)).save(newDepartment);
     }
 
