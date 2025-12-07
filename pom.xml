@@ -104,6 +104,18 @@
                         </goals>
                     </execution>
 
+                    <!-- Generate JaCoCo XML/HTML reports for SonarQube -->
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/site/jacoco</outputDirectory>
+                        </configuration>
+                    </execution>
+
 
 
                 </executions>
