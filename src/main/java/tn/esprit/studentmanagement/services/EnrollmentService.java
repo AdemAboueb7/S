@@ -8,7 +8,11 @@ import java.util.List;
 @Service
 public class EnrollmentService implements IEnrollment {
 
-    EnrollmentRepository enrollmentRepository;
+    private final EnrollmentRepository enrollmentRepository;
+
+    public EnrollmentService(EnrollmentRepository enrollmentRepository) {
+        this.enrollmentRepository = enrollmentRepository;
+    }
 
     @Override
     public List<Enrollment> getAllEnrollments() {
