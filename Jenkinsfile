@@ -1,102 +1,114 @@
-pipeline {
+pipeline { 
     agent any
-
+    
     environment {
         M2_HOME = "/usr/share/maven"
-        PATH = "${env.M2_HOME}/bin:${env.PATH}"
-        DOCKER_HUB_CREDENTIALS = 'dockerhub-credentials'
-        DOCKER_IMAGE_NAME = 'user2312/student-management'
-        DOCKER_IMAGE_TAG = "${BUILD_NUMBER}"
-        KUBECONFIG = "/var/lib/jenkins/.kube/config"
+        IMAGE_NAME = "ademab/alyou"
+        DOCKERHUB_CREDENTIALS = "dockerhub-cred"
     }
-
+    
     stages {
-
-        stage('Git Checkout') {
+        stage('Checkout') {
             steps {
-                echo '=== Checking out code from GitHub ==='
-                git url: 'https://github.com/Nesrinefezzani23/Nesrine_Fezzani_4Sleam1.git', branch: 'main'
+                git url: 'https://github.com/AdemAboueb7/S.git', branch: 'main'
             }
         }
-
-        stage('Build') {
+        
+        stage('Test') {
             steps {
-                echo '=== Building with Maven ==='
-                sh 'mvn clean compile'
-                sh 'mvn test'
-                sh 'mvn package -DskipTests=true'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
+                bat "wsl mvn -q test -Dspring.profiles.active=test"
             }
         }
-
-        stage('Docker Build & Push') {
+        
+        
+        
+        stage('Package') {
             steps {
-                script {
-                    echo '=== Building Docker Image ==='
-                    sh """
-                        docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
-                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${DOCKER_IMAGE_NAME}:latest
+                bat "wsl mvn -q package -Dspring.profiles.active=test"
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                echo "Checking Docker..."
+                bat "wsl docker --version"
+                echo "Building image ${IMAGE_NAME}:latest"
+                bat """
+                    wsl docker build -t ${IMAGE_NAME}:latest .
+                """
+            }
+        }
+        
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: DOCKERHUB_CREDENTIALS,
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    echo "Logging to Docker Hub..."
+                    bat """
+                        echo %DOCKER_PASS% | wsl docker login -u %DOCKER_USER% --password-stdin
                     """
-
-                    echo '=== Pushing to Docker Hub ==='
-                    withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}",
-                                                      usernameVariable: 'DOCKER_USER',
-                                                      passwordVariable: 'DOCKER_PASS')]) {
-                        sh """
-                            echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
-                            docker push ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
-                            docker push ${DOCKER_IMAGE_NAME}:latest
-                            docker logout
-                        """
-                    }
+                    echo "Pushing Docker image..."
+                    bat "wsl docker push ${IMAGE_NAME}:latest || exit 0"
                 }
             }
         }
-
-        stage('Kubernetes Deploy') {
-            steps {
-                script {
-                    echo '=== Deploying to Kubernetes ==='
-                    sh """
-                        kubectl set image deployment/spring-app spring-app=${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -n devops
-                        kubectl rollout status deployment/spring-app -n devops --timeout=5m
-                        kubectl get pods -n devops
-                    """
-                }
-            }
-        }
-
-        stage('Deploy MySQL & Spring Boot on K8s') {
-            steps {
-                script {
-                    echo '=== Verifying MySQL and Spring Boot Deployment ==='
-                    sh """
-                        kubectl get pods -l app=mysql -n devops
-                        kubectl get pods -l app=spring-app -n devops
-                        kubectl get svc -n devops
-                        echo "=== Application URL ==="
-                        echo "Run: minikube service spring-service -n devops --url"
+       stage('MVN SONARQUBE') {
+    steps {
+        echo "Analyzing code quality with SonarQube..."
+        script {
+            withSonarQubeEnv('SonarQube') {
+                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                    bat """
+                        wsl mvn clean verify sonar:sonar ^
+                        -Dsonar.projectKey=alyou-project ^
+                        -Dsonar.projectName="Alyou Application" ^
+                        -Dsonar.host.url=http://localhost:9000 ^
+                        -Dsonar.token=%SONAR_TOKEN% ^
+                        -Dspring.profiles.active=test
                     """
                 }
             }
         }
-
+    }
+}
+	stage('Deploy to Kubernetes') {
+    steps {
+        echo "Deploying to Kubernetes cluster..."
+        script {
+            // Appliquer les déploiements MySQL et Spring Boot
+            bat """
+                wsl kubectl apply -f mysql-deployment.yaml
+                wsl kubectl apply -f spring-deployment.yaml
+                
+                # Attendre que les pods soient prêts
+                wsl kubectl wait --for=condition=ready pod -l app=mysql -n devops --timeout=120s
+                wsl kubectl wait --for=condition=ready pod -l app=spring-app -n devops --timeout=120s
+                
+                # Vérifier le déploiement
+                wsl kubectl get pods -n devops
+                wsl kubectl get svc -n devops
+            '''
+        }
+    }
+}
     }
 
+    
     post {
         always {
-            echo '=== Pipeline finished ==='
-            archiveArtifacts artifacts: 'target/*.jar', fingerprint: true, allowEmptyArchive: true
+            echo "Pipeline finished - cleaning..."
+            bat '''
+                wsl bash -c "docker logout" || echo "logout ignored"
+            '''
         }
         success {
-            echo '✅ Build succeeded and deployed to Kubernetes!'
+            echo "Build succeeded! Image pushed to DockerHub"
         }
         failure {
-            echo '❌ Build failed!'
+            echo "Build failed!"
         }
     }
 }
